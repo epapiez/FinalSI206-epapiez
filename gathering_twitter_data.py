@@ -39,10 +39,10 @@ def set_up_twitter_table(cur, conn):
                     fol_count = result['user']['followers_count']
                     follower_count = follower_count + fol_count
                     count = count + 1
-            cur.execute("INSERT OR IGNORE INTO Twitter_Data (twitter_num_id, song, song_mentions, song_favorites) VALUES (?, ?, ?, ?)", (twitter_num_id, song, count, favorite_count))
-            cur.execute("INSERT OR IGNORE INTO Follower_Data (twitter_num_id, song, follower_count) VALUES (?, ?, ?)", (twitter_num_id, song, follower_count))
-            twitter_num_id = twitter_num_id + 1
-            x = x + 1
+        cur.execute("INSERT OR IGNORE INTO Twitter_Data (twitter_num_id, song, song_mentions, song_favorites) VALUES (?, ?, ?, ?)", (twitter_num_id, song, count, favorite_count))
+        cur.execute("INSERT OR IGNORE INTO Follower_Data (twitter_num_id, song, follower_count) VALUES (?, ?, ?)", (twitter_num_id, song, follower_count))
+        twitter_num_id = twitter_num_id + 1
+        x = x + 1
     conn.commit()
 
     

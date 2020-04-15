@@ -77,16 +77,24 @@ def get_average_weeks(cur, conn):
     for week in weeks:
         weeks_list.append(week[0])
     average_weeks = sum(weeks_list) / len(weeks_list)
-    print(average_weeks)
-    
+    return("The average amount of weeks spent on the Billboard Hot 100 based on songs currently on it is " + str(average_weeks) + " weeks.")
 
+
+def write_data_to_file(filename, cur, conn):
+
+    path = os.path.dirname(os.path.abspath(__file__))
+
+    outFile = open(path + filename, "w")
+    outFile.write(str(get_average_weeks(cur, conn)))
+    outFile.write(str(find_top_three_artists()))
+    outFile.close()
 
 
 
 def main():
     cur, conn = setUpDatabase('music.db')
     setup_hot_100_table(cur, conn)
-    get_average_weeks(cur, conn)
+    write_data_to_file("music_data.txt", cur, conn)
     conn.close()
 
 if __name__ == "__main__":
