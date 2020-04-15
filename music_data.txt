@@ -1,0 +1,1 @@
+The average amount of weeks spent on the Billboard Hot 100 based on songs currently on it is 11.48 weeks.['Rod Wave has 9 songs on the Billboard Hot 100.', 'The Weeknd has 4 songs on the Billboard Hot 100.', 'Lil Uzi Vert has 3 songs on the Billboard Hot 100.']
