@@ -41,14 +41,20 @@ def setUpDatabase(db_name):
 def setup_hot_100_table(cur, conn):
     top_100_list = get_songs_and_artists()
     cur.execute("CREATE TABLE IF NOT EXISTS Hot100 (creation_id INTEGER PRIMARY KEY, song TEXT, artist TEXT, weeks_on_chart INTEGER)")
+    cur.execute('SELECT song FROM Hot100')
+    song_list = cur.fetchall()
     x = 0
-    for x in range(len(top_100_list)):
-        creation_id = x
-        song = top_100_list[x][0]
-        artist = top_100_list[x][1]
-        weeks = top_100_list[x][2]
+    count = len(song_list)
+    #for x in range(len(top_100_list)):
+    for x in range(20):
+        x = count
+        creation_id = count
+        song = top_100_list[count][0]
+        artist = top_100_list[count][1]
+        weeks = top_100_list[count][2]
         x = x + 1
-        cur.execute("INSERT OR IGNORE INTO Hot100 (creation_id, song, artist, weeks_on_chart) VALUES (?, ?, ?, ?)", (creation_id, song, artist, weeks))
+        count = count + 1
+        cur.execute("INSERT INTO Hot100 (creation_id, song, artist, weeks_on_chart) VALUES (?, ?, ?, ?)", (creation_id, song, artist, weeks))
     conn.commit()
 
 def find_top_three_artists():
@@ -82,11 +88,13 @@ def get_average_weeks(cur, conn):
 
 def write_data_to_file(filename, cur, conn):
 
-    path = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.dirname(os.path.abspath(__file__)) + os.sep
 
     outFile = open(path + filename, "w")
-    outFile.write(str(get_average_weeks(cur, conn)))
-    outFile.write(str(find_top_three_artists()))
+    weeks_output = str(get_average_weeks(cur, conn))
+    artist_output = str(find_top_three_artists())
+    outFile.write(weeks_output)
+    outFile.write(artist_output)
     outFile.close()
 
 

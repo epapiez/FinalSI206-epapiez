@@ -14,10 +14,9 @@ api = tweepy.API(auth, parser=tweepy.parsers.JSONParser(), wait_on_rate_limit=Tr
 
 
 def set_up_twitter_table(cur, conn):
-    cur.execute("CREATE TABLE IF NOT EXISTS Twitter_Data (twitter_num_id INTEGER PRIMARY KEY, song TEXT, song_mentions INTEGER, song_favorites INTEGER)")
-    cur.execute("CREATE TABLE IF NOT EXISTS Follower_Data (twitter_num_id INTEGER PRIMARY KEY, song TEXT, follower_count INTEGER)")
+    cur.execute("CREATE TABLE IF NOT EXISTS Twitter_Data (song TEXT PRIMARY KEY, song_mentions INTEGER, song_favorites INTEGER)")
+    cur.execute("CREATE TABLE IF NOT EXISTS Follower_Data (song TEXT PRIMARY KEY, follower_count INTEGER)")
     cur.execute('SELECT song FROM Hot100')
-    twitter_num_id = 0
     song_list = cur.fetchall()
     cur.execute('SELECT song FROM Twitter_Data')
     existing_song_names = cur.fetchall()
@@ -26,10 +25,10 @@ def set_up_twitter_table(cur, conn):
         existing_songs.append(name[0])
     x = 0
     for songs in song_list:
-        while x < 20:
+        if x < 20:
             song = songs[0]
             if song not in existing_songs:
-                results = api.search(q=str(song))
+                results = api.search(q=str(song), count=100)
                 count = 0
                 favorite_count = 0
                 follower_count = 0
@@ -39,15 +38,15 @@ def set_up_twitter_table(cur, conn):
                     fol_count = result['user']['followers_count']
                     follower_count = follower_count + fol_count
                     count = count + 1
-        cur.execute("INSERT OR IGNORE INTO Twitter_Data (twitter_num_id, song, song_mentions, song_favorites) VALUES (?, ?, ?, ?)", (twitter_num_id, song, count, favorite_count))
-        cur.execute("INSERT OR IGNORE INTO Follower_Data (twitter_num_id, song, follower_count) VALUES (?, ?, ?)", (twitter_num_id, song, follower_count))
-        twitter_num_id = twitter_num_id + 1
-        x = x + 1
+                cur.execute("INSERT INTO Twitter_Data (song, song_mentions, song_favorites) VALUES (?, ?, ?)", (song, count, favorite_count))
+                cur.execute("INSERT INTO Follower_Data (song, follower_count) VALUES (?, ?)", (song, follower_count))
+                x = x + 1
     conn.commit()
 
     
 def join_tables(cur, conn):
     cur.execute("SELECT Twitter_Data.song_favorites, Follower_Data.follower_count FROM Twitter_Data LEFT JOIN Follower_Data ON Twitter_Data.song = Follower_Data.song")
+    conn.commit()
 
 
 def main():
