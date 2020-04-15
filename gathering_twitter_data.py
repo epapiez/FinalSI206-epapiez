@@ -45,9 +45,34 @@ def set_up_twitter_table(cur, conn):
 
     
 def join_tables(cur, conn):
-    cur.execute("SELECT Twitter_Data.song_favorites, Follower_Data.follower_count FROM Twitter_Data LEFT JOIN Follower_Data ON Twitter_Data.song = Follower_Data.song")
+    cur.execute("SELECT Twitter_Data.song_mentions, Follower_Data.follower_count, Twitter_Data.song FROM Twitter_Data LEFT JOIN Follower_Data ON Twitter_Data.song = Follower_Data.song")
+    results = cur.fetchall()
     conn.commit()
+    return results
 
+
+def average_followers_per_song(cur, conn):
+    average_list = []
+    results = join_tables(cur, conn)
+    for result in results:
+        if result[0] > 0:
+            average = result[1] / result[0]
+            average_list.append("The average number of followers of a Twitter user tweeting about " + result[2] + " is " + str(average))
+        else:
+            average_list.append("The song " + result[2] + " did not have any mentions on Twitter.")
+    return average_list
+
+def write_data_to_file(filename, cur, conn):
+
+    path = os.path.dirname(os.path.abspath(__file__)) + os.sep
+
+    outFile = open(path + filename, "w")
+    outFile.write("Average Followers of a Twitter User Based on the Song They Tweet About\n")
+    outFile.write("=======================================================================\n\n")
+    average_output = average_followers_per_song(cur, conn)
+    for data in average_output:
+        outFile.write(str(data) + '\n' + '\n')
+    outFile.close()
 
 def main():
     
@@ -57,7 +82,7 @@ def main():
     cur = conn.cursor()
 
     set_up_twitter_table(cur, conn)
-    join_tables(cur, conn)
+    write_data_to_file("twitter_data.txt", cur, conn)
 
     conn.close()
 

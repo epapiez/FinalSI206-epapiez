@@ -45,7 +45,6 @@ def setup_hot_100_table(cur, conn):
     song_list = cur.fetchall()
     x = 0
     count = len(song_list)
-    #for x in range(len(top_100_list)):
     for x in range(20):
         x = count
         creation_id = count
@@ -91,10 +90,16 @@ def write_data_to_file(filename, cur, conn):
     path = os.path.dirname(os.path.abspath(__file__)) + os.sep
 
     outFile = open(path + filename, "w")
+    outFile.write("Average Weeks a Song has Spent on the Billboard 100\n")
+    outFile.write("=====================================================\n\n")
     weeks_output = str(get_average_weeks(cur, conn))
-    artist_output = str(find_top_three_artists())
-    outFile.write(weeks_output)
-    outFile.write(artist_output)
+    outFile.write(weeks_output + "\n\n")
+    outFile.write("Top Three Artists on the Billboard 100\n")
+    outFile.write("======================================================\n\n")
+    artist_output = find_top_three_artists()
+    outFile.write("1. " + artist_output[0] + "\n")
+    outFile.write("2. " + artist_output[1] + "\n")
+    outFile.write("3. " + artist_output[2] + "\n")
     outFile.close()
 
 
