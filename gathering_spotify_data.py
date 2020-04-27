@@ -169,7 +169,7 @@ def average_popularity(cur, conn):
     return average_popularity
 
 def write_data_to_file(filename, cur, conn):
-    """Takes in a filename (string) as an input. Returns nothing. Creates a file and writes return value of the function average_popularity() to the file. """
+    """Takes in a filename (string) as an input and the database cursor/connection. Returns nothing. Creates a file and writes return value of the function average_popularity() to the file. """
 
     path = os.path.dirname(os.path.abspath(__file__)) + os.sep
 
@@ -177,6 +177,7 @@ def write_data_to_file(filename, cur, conn):
     outFile.write("Average Popularity of a BillBoard Hot 100 Song on Spotify\n")
     outFile.write("=============================================================\n\n")
     pop_output = (average_popularity(cur, conn))
+    #This line rounds the average popularity to one decimal place.
     rounded_pop = int(pop_output*100) / 100
     outFile.write("The average popularity of a Billboard Hot 100 song on Spotify is " + str(rounded_pop) + "." + "\n\n")
     outFile.close()
@@ -187,10 +188,6 @@ def main():
     path = os.path.dirname(os.path.abspath(__file__))
     conn = sqlite3.connect(path+'/music.db')
     cur = conn.cursor()
-
-    #print(find_artists("Thomas Rhett Featuring Jon Pardi"))  !!!!!!!!!!
-
-    #results = sp.search(q="RITMO (Bad Boys For Life)", limit = 50) !!!!!!!!!!!!!!
 
     set_up_spotify_table(cur, conn)
 
